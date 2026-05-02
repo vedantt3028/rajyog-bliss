@@ -200,8 +200,8 @@ export function HeroScene() {
       renderer.dispose();
       if (mount.contains(renderer.domElement)) mount.removeChild(renderer.domElement);
     };
-  }, [reducedMotion]);
+  }, [reduced]);
 
-  if (reducedMotion) return <StaticFallback />;
+  if (reduced) return <StaticFallback />;
   return <div ref={mountRef} className="absolute inset-0 -z-0" aria-hidden="true" />;
 }
