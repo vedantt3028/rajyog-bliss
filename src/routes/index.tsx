@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { HeroScene } from "@/components/HeroScene";
-import { MotionToggle } from "@/components/MotionToggle";
 import { useMotionPreference } from "@/hooks/useMotionPreference";
 import { useReveal } from "@/hooks/useReveal";
 import heroImg from "@/assets/resort-hero.jpg";
@@ -18,7 +17,7 @@ export const Route = createFileRoute("/")({
 });
 
 const WHATSAPP =
-  "https://wa.me/917030929651?text=Hello%20I%20want%20to%20book%20Rajyog%20Resort%20and%20Villa";
+  "https://wa.me/917030929651?text=Hello%20I%20want%20to%20book%20Rajyog%20Resort";
 const PHONE = "tel:+917030929651";
 
 const NAV = [
@@ -60,7 +59,7 @@ function Header() {
               scrolled ? "text-muted-foreground" : "text-white/70"
             }`}
           >
-            Resort & Villa
+            Resort
           </span>
         </a>
         <nav className="hidden md:flex items-center gap-9">
@@ -77,7 +76,6 @@ function Header() {
               {n.label}
             </a>
           ))}
-          <MotionToggle variant={scrolled ? "dark" : "light"} />
           <a
             href={PHONE}
             className="bg-gradient-gold text-gold-foreground px-5 py-2.5 rounded-full text-sm font-semibold shadow-soft hover:shadow-glow hover:scale-105 transition-all duration-300"
@@ -110,7 +108,6 @@ function Header() {
           <a href={PHONE} className="block bg-gradient-gold text-gold-foreground text-center px-5 py-3 rounded-full font-semibold">
             Call Now
           </a>
-          <div className="pt-2"><MotionToggle variant="dark" /></div>
         </div>
       )}
     </header>
@@ -185,17 +182,33 @@ function Hero() {
           className="animate-fade-up font-serif text-5xl sm:text-6xl md:text-7xl lg:text-8xl leading-[1.05] text-balance max-w-5xl"
           style={{ animationDelay: "0.15s" }}
         >
-          Peace Begins Here
-          <span className="block mt-2 bg-gradient-gold bg-clip-text text-transparent">
-            Welcome to Rajyog
-          </span>
+          Welcome to Rajyog Resort
         </h1>
         <p
-          className="animate-fade-up mt-7 text-lg md:text-xl text-white/85 max-w-2xl font-light"
+          className="animate-fade-up mt-7 text-2xl md:text-3xl text-white/90 max-w-2xl font-serif"
           style={{ animationDelay: "0.3s" }}
         >
-          A calm and cozy getaway near Mapro Garden — where forests breathe, mornings glow, and time slows down.
+          Peace Begins Here <span aria-hidden="true">🌿</span>
         </p>
+        <ul
+          className="animate-fade-up mt-7 hero-feature-list text-white/90 max-w-3xl"
+          style={{ animationDelay: "0.38s" }}
+        >
+          {[
+            "Just 3 Minutes from Mapro Garden",
+            "Deluxe Rooms for a Comfortable Stay",
+            "Refreshing Swimming Pool",
+            "Scenic Hill & Nature Views",
+            "Perfect for Couples, Families & Groups",
+          ].map((item) => (
+            <li key={item}>
+              <span className="hero-feature-icon" aria-hidden="true">
+                ✓
+              </span>
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
         <div
           className="animate-fade-up mt-10 flex flex-col sm:flex-row gap-4"
           style={{ animationDelay: "0.45s" }}
@@ -236,7 +249,7 @@ function About() {
           A quiet retreat in the heart of Mahabaleshwar
         </h2>
         <p className="reveal reveal-delay-2 text-lg md:text-xl text-muted-foreground leading-relaxed font-light">
-          Tucked beside the lush strawberry fields of Mapro Garden, Rajyog Resort & Villa is a place
+          Tucked beside the lush strawberry fields of Mapro Garden, Rajyog Resort is a place
           to breathe deeper. Whether you're here for a romantic escape, a family reunion, or a
           spiritual pause, our rooms, food and views were made for slow, soulful days.
         </p>
@@ -655,7 +668,7 @@ function Location() {
         </div>
         <div className="reveal rounded-3xl overflow-hidden shadow-elegant border border-border aspect-[16/9]">
           <iframe
-            title="Rajyog Resort & Villa Location"
+            title="Rajyog Resort Location"
             src="https://www.google.com/maps?q=Mapro+Garden+Mahabaleshwar&output=embed"
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
@@ -705,7 +718,7 @@ function Footer() {
     <footer className="bg-primary text-primary-foreground px-6 lg:px-10 py-16">
       <div className="max-w-7xl mx-auto grid md:grid-cols-3 gap-10">
         <div>
-          <div className="font-serif text-2xl">Rajyog Resort & Villa</div>
+          <div className="font-serif text-2xl">Rajyog Resort</div>
           <p className="mt-3 text-primary-foreground/70 text-sm leading-relaxed">
             A calm, cozy resort where Mahabaleshwar's forests meet warm Indian hospitality.
           </p>
@@ -730,7 +743,7 @@ function Footer() {
         </div>
       </div>
       <div className="max-w-7xl mx-auto mt-12 pt-6 border-t border-white/10 text-xs text-primary-foreground/60 flex flex-col sm:flex-row gap-2 justify-between">
-        <div>© {new Date().getFullYear()} Rajyog Resort & Villa. All rights reserved.</div>
+        <div>© {new Date().getFullYear()} Rajyog Resort. All rights reserved.</div>
         <div>Made with care in Mahabaleshwar</div>
       </div>
     </footer>
