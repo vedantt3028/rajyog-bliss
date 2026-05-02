@@ -108,15 +108,68 @@
   .reveal-delay-5 { transition-delay: 0.40s; }
 
   .tilt-card {
+    --tilt-x: 0deg;
+    --tilt-y: 0deg;
     transition: transform 0.5s cubic-bezier(.2,.7,.2,1), box-shadow 0.5s ease;
     transform-style: preserve-3d;
     will-change: transform;
+    transform: perspective(1100px) rotateX(var(--tilt-x)) rotateY(var(--tilt-y)) translateZ(0);
   }
-  .tilt-card:hover { transform: translateY(-8px) rotateX(3deg) rotateY(-3deg); }
+  .tilt-card:hover {
+    transform: perspective(1100px) rotateX(var(--tilt-x)) rotateY(var(--tilt-y)) translateY(-10px) scale(1.01);
+  }
 
   .img-zoom { overflow: hidden; }
   .img-zoom img { transition: transform 0.9s cubic-bezier(.2,.7,.2,1); }
   .img-zoom:hover img { transform: scale(1.08); }
+
+  .hero-depth-mist {
+    background-image:
+      radial-gradient(circle at 20% 20%, oklch(0.82 0.10 85 / 0.18), transparent 35%),
+      radial-gradient(circle at 80% 70%, oklch(0.70 0.07 150 / 0.25), transparent 40%),
+      var(--gradient-hero);
+  }
+  .hero-depth-vignette {
+    pointer-events: none;
+    background:
+      radial-gradient(120% 100% at 50% 100%, transparent 35%, oklch(0.20 0.05 150 / 0.38) 100%),
+      linear-gradient(180deg, transparent 45%, oklch(0.20 0.05 150 / 0.40));
+  }
+
+  .perspective-stage {
+    perspective: 1200px;
+  }
+  .depth-card {
+    transform-style: preserve-3d;
+    transition: transform 0.45s cubic-bezier(.2,.7,.2,1), box-shadow 0.45s ease;
+  }
+  .depth-card:nth-child(1) {
+    transform: translateZ(10px) rotateY(-1.8deg);
+  }
+  .depth-card:nth-child(2) {
+    transform: translateZ(16px) rotateY(0.5deg);
+  }
+  .depth-card:nth-child(3) {
+    transform: translateZ(9px) rotateY(1.8deg);
+  }
+  .depth-card:hover {
+    transform: translateZ(26px) rotateX(1.5deg) rotateY(0deg) translateY(-8px);
+  }
+
+  @keyframes gallery-depth-enter {
+    from { opacity: 0; transform: perspective(1200px) translateZ(-120px) scale(0.92); }
+    to { opacity: 1; transform: perspective(1200px) translateZ(0) scale(1); }
+  }
+  .gallery-depth-enter {
+    animation: gallery-depth-enter 0.5s cubic-bezier(.2,.7,.2,1) both;
+    will-change: transform, opacity;
+  }
+  .gallery-depth-next {
+    transform-origin: 70% 50%;
+  }
+  .gallery-depth-prev {
+    transform-origin: 30% 50%;
+  }
 
   @keyframes pulse-ring {
     0% { box-shadow: 0 0 0 0 oklch(0.65 0.18 150 / 0.55); }
@@ -136,4 +189,19 @@
     to { opacity: 1; transform: translateY(0); }
   }
   .animate-fade-up { animation: fade-up 1s ease-out both; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tilt-card,
+    .tilt-card:hover,
+    .depth-card,
+    .depth-card:hover,
+    .gallery-depth-enter,
+    .float-y,
+    .pulse-ring,
+    .animate-fade-up {
+      animation: none !important;
+      transform: none !important;
+      transition: none !important;
+    }
+  }
 }

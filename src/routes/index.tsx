@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { HeroScene } from "@/components/HeroScene";
 import { MotionToggle } from "@/components/MotionToggle";
+import { useMotionPreference } from "@/hooks/useMotionPreference";
 import { useReveal } from "@/hooks/useReveal";
 import heroImg from "@/assets/resort-hero.jpg";
 import roomDeluxe from "@/assets/room-deluxe.jpg";
@@ -117,6 +118,47 @@ function Header() {
 }
 
 function Hero() {
+  const { reduced } = useMotionPreference();
+  const [scrollDepth, setScrollDepth] = useState(0);
+
+  useEffect(() => {
+    if (reduced) return;
+    let raf = 0;
+    const onScroll = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        const ratio = Math.min(window.scrollY / Math.max(window.innerHeight, 1), 1);
+        setScrollDepth(ratio);
+      });
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("scroll", onScroll);
+    };
+  }, [reduced]);
+
+  const foregroundStyle = useMemo(
+    () =>
+      reduced
+        ? undefined
+        : {
+            transform: `translate3d(0, ${scrollDepth * -16}px, 0) scale(${1 + scrollDepth * 0.03})`,
+          },
+    [reduced, scrollDepth]
+  );
+
+  const midLayerStyle = useMemo(
+    () =>
+      reduced
+        ? undefined
+        : {
+            transform: `translate3d(0, ${scrollDepth * 22}px, 0)`,
+          },
+    [reduced, scrollDepth]
+  );
+
   return (
     <section id="top" className="relative min-h-screen w-full overflow-hidden">
       {/* Photo backdrop */}
@@ -127,11 +169,15 @@ function Hero() {
         height={1280}
         className="absolute inset-0 w-full h-full object-cover"
       />
-      <div className="absolute inset-0 bg-gradient-hero" />
+      <div className="absolute inset-0 bg-gradient-hero hero-depth-mist" />
+      <div className="hero-depth-vignette absolute inset-0" style={midLayerStyle} />
       {/* 3D particles */}
       <HeroScene />
 
-      <div className="relative z-10 max-w-6xl mx-auto px-6 lg:px-10 min-h-screen flex flex-col items-center justify-center text-center text-white pt-24 pb-16">
+      <div
+        className="relative z-10 max-w-6xl mx-auto px-6 lg:px-10 min-h-screen flex flex-col items-center justify-center text-center text-white pt-24 pb-16"
+        style={foregroundStyle}
+      >
         <span className="animate-fade-up inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/30 backdrop-blur-md text-xs tracking-[0.3em] uppercase text-white/90 mb-8">
           <span className="w-1.5 h-1.5 bg-accent rounded-full" /> Mahabaleshwar · India
         </span>
@@ -222,8 +268,44 @@ const ROOMS = [
 ];
 
 function Rooms() {
+  const { reduced } = useMotionPreference();
+  const sectionRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    if (reduced) return;
+    const host = sectionRef.current;
+    if (!host) return;
+    const cards = Array.from(host.querySelectorAll<HTMLElement>("[data-tilt-card]"));
+    const hasFinePointer = window.matchMedia("(pointer: fine)").matches;
+    if (!hasFinePointer) return;
+
+    const handlers = cards.map((card) => {
+      const onMove = (e: PointerEvent) => {
+        const rect = card.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width - 0.5;
+        const y = (e.clientY - rect.top) / rect.height - 0.5;
+        card.style.setProperty("--tilt-x", `${-y * 7}deg`);
+        card.style.setProperty("--tilt-y", `${x * 9}deg`);
+      };
+      const onLeave = () => {
+        card.style.setProperty("--tilt-x", "0deg");
+        card.style.setProperty("--tilt-y", "0deg");
+      };
+      card.addEventListener("pointermove", onMove);
+      card.addEventListener("pointerleave", onLeave);
+      return { card, onMove, onLeave };
+    });
+
+    return () => {
+      handlers.forEach(({ card, onMove, onLeave }) => {
+        card.removeEventListener("pointermove", onMove);
+        card.removeEventListener("pointerleave", onLeave);
+      });
+    };
+  }, [reduced]);
+
   return (
-    <section id="rooms" className="py-28 px-6 lg:px-10">
+    <section id="rooms" className="py-28 px-6 lg:px-10" ref={sectionRef}>
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <p className="reveal text-xs tracking-[0.3em] uppercase text-accent-foreground/80 mb-4">Stays</p>
@@ -238,6 +320,7 @@ function Rooms() {
           {ROOMS.map((r, i) => (
             <article
               key={r.name}
+              data-tilt-card
               className={`reveal reveal-delay-${(i % 5) + 1} tilt-card group rounded-3xl overflow-hidden bg-card shadow-soft hover:shadow-elegant border border-border`}
             >
               <div className="img-zoom aspect-[4/3]">
@@ -435,11 +518,31 @@ const GALLERY = [
 
 function Gallery() {
   const [active, setActive] = useState<number | null>(null);
+  const [dir, setDir] = useState<1 | -1>(1);
+
+  const openAt = (idx: number) => {
+    setDir(active !== null && idx < active ? -1 : 1);
+    setActive(idx);
+  };
+  const showNext = useCallback(() => {
+    setDir(1);
+    setActive((v) => (v === null ? 0 : (v + 1) % GALLERY.length));
+  }, []);
+
+  const showPrev = useCallback(() => {
+    setDir(-1);
+    setActive((v) => (v === null ? 0 : (v - 1 + GALLERY.length) % GALLERY.length));
+  }, []);
+
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setActive(null);
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setActive(null);
+      if (e.key === "ArrowRight") showNext();
+      if (e.key === "ArrowLeft") showPrev();
+    };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, []);
+  }, [showNext, showPrev]);
   return (
     <section id="gallery" className="py-28 px-6 lg:px-10">
       <div className="max-w-7xl mx-auto">
@@ -451,7 +554,7 @@ function Gallery() {
           {GALLERY.map((g, i) => (
             <button
               key={i}
-              onClick={() => setActive(i)}
+              onClick={() => openAt(i)}
               className={`reveal reveal-delay-${(i % 5) + 1} img-zoom relative aspect-[4/3] rounded-2xl overflow-hidden shadow-soft hover:shadow-elegant focus:outline-none focus:ring-2 focus:ring-accent ${
                 i === 0 ? "md:col-span-2 md:row-span-2 md:aspect-auto" : ""
               }`}
@@ -467,10 +570,38 @@ function Gallery() {
           className="fixed inset-0 z-[100] bg-black/85 backdrop-blur-md flex items-center justify-center p-4 animate-fade-up"
           onClick={() => setActive(null)}
         >
-          <img src={GALLERY[active].src} alt={GALLERY[active].alt} className="max-h-[90vh] max-w-[95vw] rounded-2xl shadow-elegant" />
+          <button
+            className="absolute left-4 sm:left-8 text-white/80 hover:text-white text-4xl px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 transition"
+            aria-label="Previous image"
+            onClick={(e) => {
+              e.stopPropagation();
+              showPrev();
+            }}
+          >
+            ‹
+          </button>
+          <img
+            key={`${active}-${dir}`}
+            src={GALLERY[active].src}
+            alt={GALLERY[active].alt}
+            className={`max-h-[90vh] max-w-[95vw] rounded-2xl shadow-elegant gallery-depth-enter ${
+              dir === 1 ? "gallery-depth-next" : "gallery-depth-prev"
+            }`}
+          />
+          <button
+            className="absolute right-4 sm:right-8 text-white/80 hover:text-white text-4xl px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 transition"
+            aria-label="Next image"
+            onClick={(e) => {
+              e.stopPropagation();
+              showNext();
+            }}
+          >
+            ›
+          </button>
           <button
             className="absolute top-6 right-6 text-white/80 hover:text-white text-3xl"
             aria-label="Close"
+            onClick={() => setActive(null)}
           >
             ×
           </button>
@@ -494,11 +625,11 @@ function Testimonials() {
           <p className="reveal text-xs tracking-[0.3em] uppercase text-accent-foreground/80 mb-4">Guest Stories</p>
           <h2 className="reveal reveal-delay-1 font-serif text-4xl md:text-5xl text-primary">What guests say</h2>
         </div>
-        <div className="grid md:grid-cols-3 gap-7">
+        <div className="grid md:grid-cols-3 gap-7 perspective-stage">
           {TESTIMONIALS.map((t, i) => (
             <figure
               key={t.n}
-              className={`reveal reveal-delay-${i + 1} p-8 rounded-2xl bg-background border border-border shadow-soft hover:shadow-elegant hover:-translate-y-1 transition-all duration-500`}
+              className={`reveal reveal-delay-${i + 1} depth-card p-8 rounded-2xl bg-background border border-border shadow-soft hover:shadow-elegant transition-all duration-500`}
             >
               <div className="text-accent text-2xl mb-3">★★★★★</div>
               <blockquote className="font-serif text-lg text-foreground/90 leading-relaxed">"{t.q}"</blockquote>
