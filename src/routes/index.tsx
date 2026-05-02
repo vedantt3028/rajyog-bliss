@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { HeroScene } from "@/components/HeroScene";
+import { MotionToggle } from "@/components/MotionToggle";
 import { useReveal } from "@/hooks/useReveal";
 import heroImg from "@/assets/resort-hero.jpg";
 import roomDeluxe from "@/assets/room-deluxe.jpg";
@@ -75,6 +76,7 @@ function Header() {
               {n.label}
             </a>
           ))}
+          <MotionToggle variant={scrolled ? "dark" : "light"} />
           <a
             href={PHONE}
             className="bg-gradient-gold text-gold-foreground px-5 py-2.5 rounded-full text-sm font-semibold shadow-soft hover:shadow-glow hover:scale-105 transition-all duration-300"
@@ -107,6 +109,7 @@ function Header() {
           <a href={PHONE} className="block bg-gradient-gold text-gold-foreground text-center px-5 py-3 rounded-full font-semibold">
             Call Now
           </a>
+          <div className="pt-2"><MotionToggle variant="dark" /></div>
         </div>
       )}
     </header>
