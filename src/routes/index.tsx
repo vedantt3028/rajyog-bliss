@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { HeroScene } from "@/components/HeroScene";
+import { MotionToggle } from "@/components/MotionToggle";
 import { useReveal } from "@/hooks/useReveal";
 import heroImg from "@/assets/resort-hero.jpg";
 import roomDeluxe from "@/assets/room-deluxe.jpg";
