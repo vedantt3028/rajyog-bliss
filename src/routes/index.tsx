@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { HeroScene } from "@/components/HeroScene";
+import { HoverFooter } from "@/components/HoverFooter";
 import { useMotionPreference } from "@/hooks/useMotionPreference";
 import { useReveal } from "@/hooks/useReveal";
 import heroImg from "@/assets/resort-hero.jpg";
@@ -172,7 +173,7 @@ function Hero() {
       <HeroScene />
 
       <div
-        className="hero-content-shell relative z-10 max-w-6xl mx-auto px-6 lg:px-10 min-h-screen flex flex-col items-center lg:items-start justify-center text-center lg:text-left text-white pt-24 pb-20 lg:pl-16"
+        className="hero-content-shell relative z-10 max-w-6xl mx-auto px-6 lg:px-10 min-h-screen flex flex-col items-center justify-center text-center text-white pt-24 pb-20"
         style={foregroundStyle}
       >
         <span className="animate-fade-up inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-accent/70 bg-black/20 backdrop-blur-md text-xs tracking-[0.3em] uppercase text-accent mb-8">
@@ -825,7 +826,7 @@ function Index() {
       <Testimonials />
       <Location />
       <FinalCTA />
-      <Footer />
+      <HoverFooter />
       <FloatingWhatsApp />
     </main>
   );
