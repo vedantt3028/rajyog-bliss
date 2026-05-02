@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import * as THREE from "three";
+import { useMotionPreference } from "@/hooks/useMotionPreference";
 
 /**
  * Calm particle hero with strong mobile optimizations:
@@ -35,14 +36,10 @@ function StaticFallback() {
 
 export function HeroScene() {
   const mountRef = useRef<HTMLDivElement>(null);
-  const [reducedMotion, setReducedMotion] = useState(false);
+  const { reduced } = useMotionPreference();
 
   useEffect(() => {
-    setReducedMotion(window.matchMedia("(prefers-reduced-motion: reduce)").matches);
-  }, []);
-
-  useEffect(() => {
-    if (reducedMotion) return;
+    if (reduced) return;
     const mount = mountRef.current;
     if (!mount) return;
 
