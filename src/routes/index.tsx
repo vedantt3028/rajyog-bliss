@@ -17,7 +17,7 @@ export const Route = createFileRoute("/")({
 });
 
 const WHATSAPP =
-  "https://wa.me/917030929651?text=Hello%20I%20want%20to%20book%20Rajyog%20Resort";
+  "https://wa.me/917030929651?text=Hello%20I%20want%20to%20book%20Rajyog%20Resort%20and%20Villa";
 const PHONE = "tel:+917030929651";
 
 const NAV = [
@@ -59,7 +59,7 @@ function Header() {
               scrolled ? "text-muted-foreground" : "text-white/70"
             }`}
           >
-            Resort
+            Resort & Villa
           </span>
         </a>
         <nav className="hidden md:flex items-center gap-9">
@@ -172,36 +172,42 @@ function Hero() {
       <HeroScene />
 
       <div
-        className="relative z-10 max-w-6xl mx-auto px-6 lg:px-10 min-h-screen flex flex-col items-center justify-center text-center text-white pt-24 pb-16"
+        className="hero-content-shell relative z-10 max-w-6xl mx-auto px-6 lg:px-10 min-h-screen flex flex-col items-center lg:items-start justify-center text-center lg:text-left text-white pt-24 pb-20 lg:pl-16"
         style={foregroundStyle}
       >
-        <span className="animate-fade-up inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/30 backdrop-blur-md text-xs tracking-[0.3em] uppercase text-white/90 mb-8">
-          <span className="w-1.5 h-1.5 bg-accent rounded-full" /> Mahabaleshwar · India
+        <span className="animate-fade-up inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-accent/70 bg-black/20 backdrop-blur-md text-xs tracking-[0.3em] uppercase text-accent mb-8">
+          <span className="w-1.5 h-1.5 bg-accent rounded-full" /> MAHABALESHWAR - INDIA
         </span>
         <h1
-          className="animate-fade-up font-serif text-5xl sm:text-6xl md:text-7xl lg:text-8xl leading-[1.05] text-balance max-w-5xl"
+          className="animate-fade-up hero-title font-serif leading-[1.02] text-balance max-w-5xl"
           style={{ animationDelay: "0.15s" }}
         >
-          Welcome to Rajyog Resort
+          <span className="block hero-title-welcome">Welcome to</span>
+          <span className="block mt-1 hero-title-main">RAJYOG</span>
+          <span className="block mt-2 hero-title-sub">
+            RESORT & VILLA
+          </span>
         </h1>
         <p
-          className="animate-fade-up mt-7 text-2xl md:text-3xl text-white/90 max-w-2xl font-serif"
+          className="animate-fade-up mt-5 hero-tagline text-white/90 max-w-2xl font-serif"
           style={{ animationDelay: "0.3s" }}
         >
-          Peace Begins Here <span aria-hidden="true">🌿</span>
+          <span aria-hidden="true">✦</span> Peace Begins Here <span aria-hidden="true">🌿</span>
+          <span aria-hidden="true">✦</span>
         </p>
-        <ul
-          className="animate-fade-up mt-7 hero-feature-list text-white/90 max-w-3xl"
-          style={{ animationDelay: "0.38s" }}
-        >
+        <ul className="mt-8 hero-feature-list text-white/90 max-w-3xl">
           {[
             "Just 3 Minutes from Mapro Garden",
             "Deluxe Rooms for a Comfortable Stay",
             "Refreshing Swimming Pool",
             "Scenic Hill & Nature Views",
             "Perfect for Couples, Families & Groups",
-          ].map((item) => (
-            <li key={item}>
+          ].map((item, i) => (
+            <li
+              key={item}
+              className="animate-fade-up"
+              style={{ animationDelay: `${0.38 + i * 0.08}s` }}
+            >
               <span className="hero-feature-icon" aria-hidden="true">
                 ✓
               </span>
@@ -210,21 +216,23 @@ function Hero() {
           ))}
         </ul>
         <div
-          className="animate-fade-up mt-10 flex flex-col sm:flex-row gap-4"
+          className="animate-fade-up mt-12 flex flex-col sm:flex-row gap-4 w-full sm:w-auto"
           style={{ animationDelay: "0.45s" }}
         >
           <a
             href={WHATSAPP}
             target="_blank"
             rel="noreferrer"
-            className="bg-gradient-gold text-gold-foreground px-8 py-4 rounded-full text-base font-semibold shadow-elegant hover:shadow-glow hover:scale-105 transition-all duration-300"
+            className="bg-gradient-gold text-gold-foreground px-8 py-4 rounded-full text-base font-semibold shadow-elegant hover:shadow-glow hover:scale-105 transition-all duration-300 inline-flex items-center justify-center gap-2 w-full sm:w-auto"
           >
+            <span aria-hidden="true">💬</span>
             Book on WhatsApp
           </a>
           <a
             href={PHONE}
-            className="px-8 py-4 rounded-full text-base font-semibold border border-white/40 text-white hover:bg-white hover:text-primary transition-all duration-300 backdrop-blur-md"
+            className="px-8 py-4 rounded-full text-base font-semibold border border-white/40 text-white hover:bg-white hover:text-primary transition-all duration-300 backdrop-blur-md inline-flex items-center justify-center gap-2 w-full sm:w-auto"
           >
+            <span aria-hidden="true">☎</span>
             Call +91 70309 29651
           </a>
         </div>
@@ -232,7 +240,7 @@ function Hero() {
 
       {/* scroll cue */}
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 text-white/70 text-xs tracking-[0.3em] uppercase float-y">
-        Scroll
+        SCROLL ↓
       </div>
     </section>
   );
@@ -249,7 +257,7 @@ function About() {
           A quiet retreat in the heart of Mahabaleshwar
         </h2>
         <p className="reveal reveal-delay-2 text-lg md:text-xl text-muted-foreground leading-relaxed font-light">
-          Tucked beside the lush strawberry fields of Mapro Garden, Rajyog Resort is a place
+          Tucked beside the lush strawberry fields of Mapro Garden, Rajyog Resort & Villa is a place
           to breathe deeper. Whether you're here for a romantic escape, a family reunion, or a
           spiritual pause, our rooms, food and views were made for slow, soulful days.
         </p>
@@ -668,7 +676,7 @@ function Location() {
         </div>
         <div className="reveal rounded-3xl overflow-hidden shadow-elegant border border-border aspect-[16/9]">
           <iframe
-            title="Rajyog Resort Location"
+            title="Rajyog Resort & Villa Location"
             src="https://www.google.com/maps?q=Mapro+Garden+Mahabaleshwar&output=embed"
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
@@ -714,37 +722,71 @@ function FinalCTA() {
 }
 
 function Footer() {
+  const footerNav = NAV;
   return (
-    <footer className="bg-primary text-primary-foreground px-6 lg:px-10 py-16">
-      <div className="max-w-7xl mx-auto grid md:grid-cols-3 gap-10">
-        <div>
-          <div className="font-serif text-2xl">Rajyog Resort</div>
-          <p className="mt-3 text-primary-foreground/70 text-sm leading-relaxed">
-            A calm, cozy resort where Mahabaleshwar's forests meet warm Indian hospitality.
-          </p>
+    <footer className="footer-cinematic text-primary-foreground px-6 lg:px-10 pt-20 pb-7">
+      <div className="max-w-6xl mx-auto text-center">
+        <div className="mx-auto mb-6 w-10 h-10 rounded-full border border-accent/60 flex items-center justify-center text-accent">
+          <span className="text-lg leading-none">◆</span>
         </div>
-        <div>
-          <div className="font-semibold mb-3">Contact</div>
-          <ul className="space-y-2 text-sm text-primary-foreground/80">
-            <li>Near Mapro Garden, Mahabaleshwar, MH</li>
-            <li><a href={PHONE} className="hover:text-accent">+91 70309 29651</a></li>
-            <li><a href={WHATSAPP} target="_blank" rel="noreferrer" className="hover:text-accent">WhatsApp Booking</a></li>
-          </ul>
+        <h3 className="font-serif text-4xl md:text-5xl text-primary-foreground">
+          Rajyog Resort & Villa
+        </h3>
+        <p className="mt-3 text-primary-foreground/70 text-sm md:text-base max-w-2xl mx-auto">
+          Peaceful hillside stays near Mapro Garden, Mahabaleshwar.
+        </p>
+
+        <nav className="mt-8 flex flex-wrap items-center justify-center gap-x-7 gap-y-3 text-sm text-primary-foreground/80">
+          {footerNav.map((n) => (
+            <a key={n.href} href={n.href} className="hover:text-accent transition-colors">
+              {n.label}
+            </a>
+          ))}
+        </nav>
+
+        <div className="mt-8 flex items-center justify-center gap-3">
+          <a
+            href={WHATSAPP}
+            target="_blank"
+            rel="noreferrer"
+            aria-label="WhatsApp Booking"
+            className="w-11 h-11 rounded-full border border-primary-foreground/25 bg-primary-foreground/5 hover:bg-primary-foreground/10 hover:border-accent/70 flex items-center justify-center text-sm transition"
+          >
+            WA
+          </a>
+          <a
+            href={PHONE}
+            aria-label="Call Rajyog Resort & Villa"
+            className="w-11 h-11 rounded-full border border-primary-foreground/25 bg-primary-foreground/5 hover:bg-primary-foreground/10 hover:border-accent/70 flex items-center justify-center text-sm transition"
+          >
+            ☎
+          </a>
+          <a
+            href="#gallery"
+            aria-label="View gallery"
+            className="w-11 h-11 rounded-full border border-primary-foreground/25 bg-primary-foreground/5 hover:bg-primary-foreground/10 hover:border-accent/70 flex items-center justify-center text-sm transition"
+          >
+            ◉
+          </a>
         </div>
-        <div>
-          <div className="font-semibold mb-3">Follow</div>
-          <div className="flex gap-3">
-            {["Instagram", "Facebook"].map((s) => (
-              <a key={s} href="#" className="px-4 py-2 rounded-full border border-white/20 text-sm hover:bg-white/10 transition">
-                {s}
-              </a>
-            ))}
-          </div>
+
+        <div className="mt-8 text-sm text-primary-foreground/70 flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
+          <span>Phone: +91 70309 29651</span>
+          <span className="hidden sm:inline">•</span>
+          <span>Near Mapro Garden, Mahabaleshwar, MH</span>
         </div>
       </div>
-      <div className="max-w-7xl mx-auto mt-12 pt-6 border-t border-white/10 text-xs text-primary-foreground/60 flex flex-col sm:flex-row gap-2 justify-between">
-        <div>© {new Date().getFullYear()} Rajyog Resort. All rights reserved.</div>
-        <div>Made with care in Mahabaleshwar</div>
+
+      <div className="max-w-7xl mx-auto mt-12 pt-5 border-t border-primary-foreground/10 text-xs text-primary-foreground/60 flex flex-col sm:flex-row gap-2 justify-between">
+        <div>© {new Date().getFullYear()} Rajyog Resort & Villa. All rights reserved.</div>
+        <div className="flex items-center gap-4">
+          <a href="#" className="hover:text-accent transition-colors">
+            Privacy Policy
+          </a>
+          <a href="#" className="hover:text-accent transition-colors">
+            Terms
+          </a>
+        </div>
       </div>
     </footer>
   );

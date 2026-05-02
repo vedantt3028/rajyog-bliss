@@ -69,11 +69,15 @@ export function HeroScene() {
     // Particles
     const positions = new Float32Array(PARTICLE_COUNT * 3);
     const speeds = new Float32Array(PARTICLE_COUNT);
+    const sway = new Float32Array(PARTICLE_COUNT);
+    const phase = new Float32Array(PARTICLE_COUNT);
     for (let i = 0; i < PARTICLE_COUNT; i++) {
       positions[i * 3 + 0] = (Math.random() - 0.5) * 80;
       positions[i * 3 + 1] = (Math.random() - 0.5) * 60;
       positions[i * 3 + 2] = (Math.random() - 0.5) * 60;
       speeds[i] = 0.005 + Math.random() * 0.015;
+      sway[i] = 0.002 + Math.random() * 0.004;
+      phase[i] = Math.random() * Math.PI * 2;
     }
     const geometry = new THREE.BufferGeometry();
     geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
@@ -162,11 +166,19 @@ export function HeroScene() {
 
         if (!SKIP_DRIFT) {
           for (let i = 0; i < PARTICLE_COUNT; i++) {
+            const idx = i * 3;
             arr[i * 3 + 1] += speeds[i] * 0.1;
-            if (arr[i * 3 + 1] > 30) arr[i * 3 + 1] = -30;
+            arr[idx] += Math.sin(t * (0.65 + speeds[i] * 8) + phase[i]) * sway[i];
+            if (arr[idx + 1] > 30) arr[idx + 1] = -30;
+            if (arr[idx] > 40) arr[idx] = -40;
+            if (arr[idx] < -40) arr[idx] = 40;
           }
           positionAttr.needsUpdate = true;
         }
+
+        // Soft twinkle gives a fireflies feel without expensive shaders.
+        material.opacity = 0.72 + Math.sin(t * 1.6) * 0.08;
+        if (accentMat) accentMat.opacity = 0.42 + Math.sin(t * 1.1 + 1.2) * 0.1;
 
         points.rotation.y = t * 0.02;
         if (accent) accent.rotation.y = -t * 0.015;
