@@ -689,39 +689,6 @@ function Location() {
   );
 }
 
-function FinalCTA() {
-  return (
-    <section className="relative py-32 px-6 lg:px-10 overflow-hidden">
-      <img src={heroImg} alt="" aria-hidden className="absolute inset-0 w-full h-full object-cover" />
-      <div className="absolute inset-0 bg-gradient-hero" />
-      <div className="relative max-w-4xl mx-auto text-center text-white">
-        <h2 className="reveal font-serif text-4xl md:text-6xl text-balance leading-tight">
-          Ready for your perfect getaway?
-        </h2>
-        <p className="reveal reveal-delay-1 mt-6 text-white/85 text-lg">
-          Reserve your moment of calm in Mahabaleshwar.
-        </p>
-        <div className="reveal reveal-delay-2 mt-10 flex flex-col sm:flex-row gap-4 justify-center">
-          <a
-            href={WHATSAPP}
-            target="_blank"
-            rel="noreferrer"
-            className="bg-gradient-gold text-gold-foreground px-8 py-4 rounded-full font-semibold shadow-elegant hover:shadow-glow hover:scale-105 transition-all duration-300"
-          >
-            Book on WhatsApp
-          </a>
-          <a
-            href={PHONE}
-            className="px-8 py-4 rounded-full font-semibold border border-white/40 text-white hover:bg-white hover:text-primary transition-all backdrop-blur-md"
-          >
-            Call +91 70309 29651
-          </a>
-        </div>
-      </div>
-    </section>
-  );
-}
-
 function Footer() {
   const footerNav = NAV;
   return (
@@ -825,7 +792,6 @@ function Index() {
       <Gallery />
       <Testimonials />
       <Location />
-      <FinalCTA />
       <HoverFooter />
       <FloatingWhatsApp />
     </main>
