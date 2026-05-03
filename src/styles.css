@@ -372,6 +372,47 @@
   }
   .animate-fade-up { animation: fade-up 1s ease-out both; }
 
+  /** Subtle hover lift for stat / policy / food cards */
+  .interactive-lift {
+    transition:
+      transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1),
+      box-shadow 0.5s ease,
+      border-color 0.35s ease;
+  }
+
+  .interactive-lift:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-elegant);
+  }
+
+  .interactive-lift:active {
+    transform: translateY(-2px);
+  }
+
+  /** Gallery thumbnails — light lift + press */
+  .gallery-tile {
+    transition:
+      transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1),
+      box-shadow 0.45s ease;
+  }
+
+  .gallery-tile:hover {
+    transform: translateY(-5px);
+  }
+
+  .gallery-tile:active {
+    transform: translateY(-1px);
+  }
+
+  @keyframes hero-mist-breathe {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.88; }
+  }
+
+  .hero-mist-breathe {
+    animation: hero-mist-breathe 16s ease-in-out infinite;
+  }
+
   @media (max-width: 640px) {
     .hero-title-main {
       letter-spacing: 0.02em;
@@ -412,6 +453,20 @@
     .boton-elegante:hover::after {
       transform: none !important;
       transition: none !important;
+    }
+
+    .interactive-lift,
+    .interactive-lift:hover,
+    .interactive-lift:active,
+    .gallery-tile,
+    .gallery-tile:hover,
+    .gallery-tile:active {
+      transform: none !important;
+      transition: none !important;
+    }
+
+    .hero-mist-breathe {
+      animation: none !important;
     }
   }
 }

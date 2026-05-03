@@ -234,7 +234,7 @@ function Hero() {
         height={1280}
         className="absolute inset-0 w-full h-full object-cover"
       />
-      <div className="absolute inset-0 bg-gradient-hero hero-depth-mist" />
+      <div className="absolute inset-0 bg-gradient-hero hero-depth-mist hero-mist-breathe" />
       <div className="hero-depth-vignette absolute inset-0" style={midLayerStyle} />
       {/* 3D particles */}
       <HeroScene />
@@ -337,7 +337,10 @@ function About() {
             { n: "24/7", l: "Hospitality" },
             { n: "5★", l: "Guest Love" },
           ].map((s) => (
-            <div key={s.l} className="p-6 rounded-2xl bg-background shadow-soft">
+            <div
+              key={s.l}
+              className="interactive-lift p-6 rounded-2xl border border-transparent bg-background shadow-soft hover:border-accent/25"
+            >
               <div className="font-serif text-3xl md:text-4xl text-primary">{s.n}</div>
               <div className="text-sm text-muted-foreground mt-1">{s.l}</div>
             </div>
@@ -488,7 +491,7 @@ function Amenities() {
           {AMENITIES.map((a, i) => (
             <div
               key={a.t}
-              className={`reveal reveal-delay-${(i % 5) + 1} group p-8 rounded-2xl bg-background border border-border text-center hover:shadow-elegant hover:-translate-y-1 transition-all duration-500`}
+              className={`reveal reveal-delay-${(i % 5) + 1} interactive-lift group p-8 rounded-2xl bg-background border border-border text-center hover:border-accent/35`}
             >
               <div className="text-4xl mb-3 transition-transform duration-500 group-hover:scale-110">{a.i}</div>
               <div className="font-medium text-foreground/80">{a.t}</div>
@@ -687,7 +690,10 @@ function Food() {
               { t: "Outside Food", d: "Allowed freely" },
               { t: "Custom Meals", d: "For groups" },
             ].map((f) => (
-              <div key={f.t} className="p-5 rounded-xl border border-border bg-card">
+              <div
+                key={f.t}
+                className="interactive-lift p-5 rounded-xl border border-border bg-card hover:border-accent/45"
+              >
                 <div className="font-serif text-lg text-primary">{f.t}</div>
                 <div className="text-sm text-muted-foreground mt-1">{f.d}</div>
               </div>
@@ -720,7 +726,7 @@ function Policies() {
           {items.map((p, i) => (
             <div
               key={p.t}
-              className={`reveal reveal-delay-${i + 1} p-7 rounded-2xl bg-background border border-border hover:border-accent/60 hover:shadow-soft transition-all`}
+              className={`reveal reveal-delay-${i + 1} interactive-lift p-7 rounded-2xl bg-background border border-border hover:border-accent/60`}
             >
               <div className="font-serif text-xl text-primary">{p.t}</div>
               <div className="text-sm text-muted-foreground mt-2 leading-relaxed">{p.d}</div>
@@ -794,7 +800,7 @@ function Gallery() {
             <button
               key={i}
               onClick={() => openAt(i)}
-              className={`reveal reveal-delay-${(i % 5) + 1} img-zoom relative aspect-[4/3] rounded-2xl overflow-hidden shadow-soft hover:shadow-elegant focus:outline-none focus:ring-2 focus:ring-accent ${
+              className={`reveal reveal-delay-${(i % 5) + 1} gallery-tile img-zoom relative aspect-[4/3] rounded-2xl overflow-hidden shadow-soft hover:shadow-elegant focus:outline-none focus:ring-2 focus:ring-accent ${
                 i === 0 ? "md:col-span-2 md:row-span-2 md:aspect-auto" : ""
               }`}
             >
