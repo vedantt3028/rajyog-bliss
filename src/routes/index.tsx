@@ -5,13 +5,8 @@ import { HoverFooter } from "@/components/HoverFooter";
 import { useMotionPreference } from "@/hooks/useMotionPreference";
 import { useReveal } from "@/hooks/useReveal";
 import heroImg from "@/assets/resort-hero.jpg";
-import roomDeluxe from "@/assets/room-deluxe.jpg";
-import roomBalcony from "@/assets/room-balcony.jpg";
-import roomFamily from "@/assets/room-family.jpg";
-import gallery1 from "@/assets/gallery-1.jpg";
 import galleryFood from "@/assets/gallery-food.jpg";
-import galleryView from "@/assets/gallery-view.jpg";
-import galleryDining from "@/assets/gallery-dining.jpg";
+import galleryThali from "@/assets/gallery-thali.png";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -20,6 +15,11 @@ export const Route = createFileRoute("/")({
 const WHATSAPP =
   "https://wa.me/917030929651?text=Hello%20I%20want%20to%20book%20Rajyog%20Resort%20and%20Villa";
 const PHONE = "tel:+917030929651";
+
+/** Resolved from https://maps.app.goo.gl/FRvLeAjjV1ESh6rj6 — Rajyog Resort and Villa pin */
+const MAP_GOOGLE_LINK = "https://maps.app.goo.gl/FRvLeAjjV1ESh6rj6";
+const MAP_EMBED_SRC =
+  "https://www.google.com/maps?q=17.9263689%2C73.7354016&z=17&output=embed";
 
 const NAV = [
   { label: "About", href: "#about" },
@@ -32,83 +32,150 @@ const NAV = [
 function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 30);
-    onScroll();
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
+  const [activeHref, setActiveHref] = useState<string | null>(null);
+  const headerRef = useRef<HTMLElement | null>(null);
+
+  const updateScrollState = useCallback(() => {
+    setScrolled(window.scrollY > 30);
+    const headerOffset = 96;
+    const y = window.scrollY + headerOffset;
+    let current: string | null = null;
+    for (const n of NAV) {
+      const id = n.href.replace("#", "");
+      const el = document.getElementById(id);
+      if (!el) continue;
+      const top = el.getBoundingClientRect().top + window.scrollY;
+      if (top <= y) current = n.href;
+    }
+    setActiveHref(current);
   }, []);
+
+  useEffect(() => {
+    updateScrollState();
+    window.addEventListener("scroll", updateScrollState, { passive: true });
+    return () => window.removeEventListener("scroll", updateScrollState);
+  }, [updateScrollState]);
+
+  useEffect(() => {
+    if (!open) return;
+    const onPointerDown = (e: PointerEvent) => {
+      if (headerRef.current && !headerRef.current.contains(e.target as Node)) setOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("pointerdown", onPointerDown);
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("pointerdown", onPointerDown);
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+
   return (
     <header
-      className={`fixed top-0 inset-x-0 z-50 transition-all duration-500 ${
+      ref={headerRef}
+      className={`fixed top-0 inset-x-0 z-50 transition-[background-color,box-shadow,border-color] duration-500 ${
         scrolled
-          ? "bg-background/85 backdrop-blur-xl border-b border-border shadow-soft"
-          : "bg-transparent"
+          ? "bg-background/90 backdrop-blur-xl border-b border-border/70 shadow-soft"
+          : "bg-transparent border-b border-transparent"
       }`}
     >
       <div className="max-w-7xl mx-auto px-6 lg:px-10 h-20 flex items-center justify-between">
-        <a href="#top" className="flex items-center gap-2">
+        <a
+          href="#top"
+          className={`flex items-center gap-2 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
+            scrolled
+              ? "focus-visible:ring-primary focus-visible:ring-offset-background"
+              : "focus-visible:ring-white focus-visible:ring-offset-transparent"
+          }`}
+        >
           <span
-            className={`font-serif text-xl md:text-2xl font-semibold tracking-tight ${
+            className={`font-serif text-xl md:text-2xl font-semibold tracking-tight transition-colors duration-300 ${
               scrolled ? "text-primary" : "text-white"
             }`}
           >
             Rajyog
           </span>
           <span
-            className={`text-xs uppercase tracking-[0.25em] ${
+            className={`text-xs uppercase tracking-[0.28em] transition-colors duration-300 ${
               scrolled ? "text-muted-foreground" : "text-white/70"
             }`}
           >
             Resort & Villa
           </span>
         </a>
-        <nav className="hidden md:flex items-center gap-9">
-          {NAV.map((n) => (
-            <a
-              key={n.href}
-              href={n.href}
-              className={`text-sm font-medium transition-colors ${
-                scrolled
-                  ? "text-foreground/80 hover:text-primary"
-                  : "text-white/85 hover:text-white"
-              }`}
-            >
-              {n.label}
-            </a>
-          ))}
-          <a
-            href={PHONE}
-            className="bg-gradient-gold text-gold-foreground px-5 py-2.5 rounded-full text-sm font-semibold shadow-soft hover:shadow-glow hover:scale-105 transition-all duration-300"
-          >
-            Call Now
+        <nav className="hidden md:flex items-center gap-7 lg:gap-8">
+          {NAV.map((n) => {
+            const active = activeHref === n.href;
+            return (
+              <a
+                key={n.href}
+                href={n.href}
+                className={`relative text-sm font-medium transition-colors duration-300 ease-out rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:ring-offset-2 ${
+                  scrolled
+                    ? active
+                      ? "text-primary"
+                      : "text-foreground/75 hover:text-primary"
+                    : active
+                      ? "text-white"
+                      : "text-white/85 hover:text-white"
+                } ${scrolled ? "focus-visible:ring-offset-background" : "focus-visible:ring-white focus-visible:ring-offset-transparent"}`}
+              >
+                {n.label}
+                <span
+                  className={`absolute -bottom-1 left-0 right-0 h-0.5 rounded-full transition-opacity duration-300 ${
+                    active ? "opacity-100" : "opacity-0"
+                  } ${scrolled ? "bg-primary" : "bg-white"}`}
+                  aria-hidden="true"
+                />
+              </a>
+            );
+          })}
+          <a href={PHONE} className="boton-elegante boton-elegante--sm shrink-0">
+            <span className="boton-elegante__label">Call Now</span>
           </a>
         </nav>
         <button
+          type="button"
           onClick={() => setOpen((v) => !v)}
-          className={`md:hidden p-2 rounded-md ${scrolled ? "text-foreground" : "text-white"}`}
-          aria-label="Menu"
+          className={`md:hidden p-2 rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 ${
+            scrolled ? "text-foreground focus-visible:ring-offset-background" : "text-white focus-visible:ring-white focus-visible:ring-offset-transparent"
+          }`}
+          aria-label={open ? "Close menu" : "Open menu"}
+          aria-expanded={open}
         >
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
             {open ? <path d="M6 6l12 12M6 18L18 6" /> : <path d="M4 7h16M4 12h16M4 17h16" />}
           </svg>
         </button>
       </div>
       {open && (
-        <div className="md:hidden bg-background border-t border-border px-6 py-4 space-y-3">
-          {NAV.map((n) => (
+        <div className="md:hidden px-4 pb-4">
+          <div className="rounded-2xl border border-border/80 bg-background/95 backdrop-blur-xl shadow-elegant px-3 py-3 space-y-0.5">
+            {NAV.map((n) => {
+              const active = activeHref === n.href;
+              return (
+                <a
+                  key={n.href}
+                  href={n.href}
+                  onClick={() => setOpen(false)}
+                  className={`block rounded-xl px-3 py-2.5 text-sm font-medium transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-inset ${
+                    active ? "bg-secondary text-primary" : "text-foreground/80 hover:bg-secondary/80 hover:text-primary"
+                  }`}
+                >
+                  {n.label}
+                </a>
+              );
+            })}
             <a
-              key={n.href}
-              href={n.href}
+              href={PHONE}
+              className="boton-elegante boton-elegante--sm mt-3 w-full justify-center text-center"
               onClick={() => setOpen(false)}
-              className="block text-foreground/80 hover:text-primary"
             >
-              {n.label}
+              <span className="boton-elegante__label">Call Now</span>
             </a>
-          ))}
-          <a href={PHONE} className="block bg-gradient-gold text-gold-foreground text-center px-5 py-3 rounded-full font-semibold">
-            Call Now
-          </a>
+          </div>
         </div>
       )}
     </header>
@@ -185,7 +252,7 @@ function Hero() {
         >
           <span className="block hero-title-welcome">Welcome to</span>
           <span className="block mt-1 hero-title-main">RAJYOG</span>
-          <span className="block mt-2 hero-title-sub">
+          <span className="block mt-5 md:mt-6 hero-title-sub">
             RESORT & VILLA
           </span>
         </h1>
@@ -224,17 +291,18 @@ function Hero() {
             href={WHATSAPP}
             target="_blank"
             rel="noreferrer"
-            className="bg-gradient-gold text-gold-foreground px-8 py-4 rounded-full text-base font-semibold shadow-elegant hover:shadow-glow hover:scale-105 transition-all duration-300 inline-flex items-center justify-center gap-2 w-full sm:w-auto"
+            className="boton-elegante w-full sm:w-auto"
           >
-            <span aria-hidden="true">💬</span>
-            Book on WhatsApp
+            <span className="boton-elegante__label">
+              <span aria-hidden="true">💬</span>
+              Book on WhatsApp
+            </span>
           </a>
-          <a
-            href={PHONE}
-            className="px-8 py-4 rounded-full text-base font-semibold border border-white/40 text-white hover:bg-white hover:text-primary transition-all duration-300 backdrop-blur-md inline-flex items-center justify-center gap-2 w-full sm:w-auto"
-          >
-            <span aria-hidden="true">☎</span>
-            Call +91 70309 29651
+          <a href={PHONE} className="boton-elegante boton-elegante--outline-light w-full sm:w-auto">
+            <span className="boton-elegante__label">
+              <span aria-hidden="true">☎</span>
+              Call +91 70309 29651
+            </span>
           </a>
         </div>
       </div>
@@ -281,12 +349,36 @@ function About() {
 }
 
 const ROOMS = [
-  { name: "Standard Room", desc: "Cozy, comfortable and quiet — perfect for couples.", img: roomDeluxe },
-  { name: "Deluxe Room", desc: "Premium interiors with garden-side calm.", img: roomDeluxe },
-  { name: "Balcony Room", desc: "Wake up to misty hills from your private balcony.", img: roomBalcony },
-  { name: "Family Room", desc: "Spacious stay for families up to 4 guests.", img: roomFamily },
-  { name: "2 BHK Villa", desc: "Two bedrooms, living area — for small groups.", img: roomFamily },
-  { name: "4 BHK Villa", desc: "Our largest villa — ideal for big celebrations.", img: roomFamily },
+  {
+    name: "Standard Room",
+    desc: "Cozy, comfortable and quiet — perfect for couples.",
+    img: "https://i.postimg.cc/jSXx656g/11.webp",
+  },
+  {
+    name: "Deluxe Room",
+    desc: "Premium interiors with garden-side calm.",
+    img: "https://i.postimg.cc/HstDRNJJ/2.webp",
+  },
+  {
+    name: "Balcony Room",
+    desc: "Wake up to misty hills from your private balcony.",
+    img: "https://i.postimg.cc/yx4CC4Xz/6.webp",
+  },
+  {
+    name: "Family Room",
+    desc: "Spacious stay for families up to 4 guests.",
+    img: "https://i.postimg.cc/3J00ZgWj/8.webp",
+  },
+  {
+    name: "2 BHK Villa",
+    desc: "Two bedrooms, living area — for small groups.",
+    img: "https://i.postimg.cc/pLqvhSx8/9.webp",
+  },
+  {
+    name: "4 BHK Villa",
+    desc: "Our largest villa — ideal for big celebrations.",
+    img: "https://i.postimg.cc/kGbMWvwN/4-BHK-01-jpg.jpg",
+  },
 ];
 
 function Rooms() {
@@ -355,10 +447,14 @@ function Rooms() {
                   href={WHATSAPP}
                   target="_blank"
                   rel="noreferrer"
-                  className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-primary group-hover:text-accent-foreground transition-colors"
+                  className="group boton-elegante boton-elegante--sm mt-5 w-full sm:w-auto"
                 >
-                  Enquire on WhatsApp
-                  <span className="transition-transform group-hover:translate-x-1">→</span>
+                  <span className="boton-elegante__label">
+                    Enquire on WhatsApp
+                    <span aria-hidden="true" className="transition-transform group-hover:translate-x-1">
+                      →
+                    </span>
+                  </span>
                 </a>
               </div>
             </article>
@@ -404,12 +500,119 @@ function Amenities() {
   );
 }
 
+const EXPERIENCE_SLIDES = [
+  {
+    src: "https://i.postimg.cc/rsrW4ndV/pexels-suhail-shabir-32568781-35976594.jpg",
+    alt: "Misty hills and layered valleys near Mahabaleshwar",
+  },
+  {
+    src: "https://i.postimg.cc/dtGrtfP5/pexels-rohit-sharma-1230131-19673565.jpg",
+    alt: "Green Western Ghats landscape above the clouds",
+  },
+  {
+    src: "https://i.postimg.cc/CxYDZ4w1/milin-john-YPdcs99p3MY-unsplash.jpg",
+    alt: "Forest and open views in the Panchgani–Mahabaleshwar hills",
+  },
+  {
+    src: "https://i.postimg.cc/N0jHDf9w/rubankarthik-umapathy-k-EIm2J4Qmuk-unsplash.jpg",
+    alt: "Sunlit ridge lines and rolling hill country",
+  },
+  {
+    src: "https://i.postimg.cc/v8V63KB1/raj-vachhani-lz-F3f-MPCh7g-unsplash.jpg",
+    alt: "Table land style plateau and wide valley vista",
+  },
+  {
+    src: "https://i.postimg.cc/28dLfBhx/anwesha-patra-Tt-POAGEF8M0-unsplash.jpg",
+    alt: "Quiet hill roads and lush greenery near the plateau",
+  },
+  {
+    src: "https://i.postimg.cc/Sxy2QNGW/Chat-GPT-Image-May-3-2026-12-53-30-PM.png",
+    alt: "Scenic hill-station atmosphere at dusk",
+  },
+  {
+    src: "https://i.postimg.cc/WzTjmtzn/sandesh-ghadge-i1o-R4709JTw-unsplash.jpg",
+    alt: "Mahabaleshwar viewpoints and misty horizon",
+  },
+  {
+    src: "https://i.postimg.cc/90m5RSgt/pexels-raj-manohar-253004-12874870.jpg",
+    alt: "Strawberry country and calm hill mornings",
+  },
+] as const;
+
 function Experience() {
+  const { reduced } = useMotionPreference();
+  const [slide, setSlide] = useState(0);
+  const [paused, setPaused] = useState(false);
+
+  useEffect(() => {
+    if (reduced || paused || EXPERIENCE_SLIDES.length <= 1) return;
+    const id = window.setInterval(() => {
+      setSlide((i) => (i + 1) % EXPERIENCE_SLIDES.length);
+    }, 5500);
+    return () => clearInterval(id);
+  }, [reduced, paused]);
+
+  const go = (dir: 1 | -1) => {
+    setSlide((i) => (i + dir + EXPERIENCE_SLIDES.length) % EXPERIENCE_SLIDES.length);
+  };
+
   return (
     <section className="py-28 px-6 lg:px-10">
       <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-14 items-center">
-        <div className="reveal img-zoom rounded-3xl overflow-hidden shadow-elegant aspect-[4/5]">
-          <img src={galleryView} alt="Mahabaleshwar valley view" loading="lazy" width={1024} height={1280} className="w-full h-full object-cover" />
+        <div
+          className="reveal relative rounded-3xl overflow-hidden shadow-elegant aspect-[4/5] bg-muted"
+          role="region"
+          aria-roledescription="carousel"
+          aria-label="Panchgani and Mahabaleshwar scenery"
+          onMouseEnter={() => setPaused(true)}
+          onMouseLeave={() => setPaused(false)}
+        >
+          {EXPERIENCE_SLIDES.map((s, i) => (
+            <img
+              key={s.src}
+              src={s.src}
+              alt={s.alt}
+              width={1024}
+              height={1280}
+              loading={i === 0 ? "eager" : "lazy"}
+              decoding="async"
+              className={`absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-[900ms] ease-out pointer-events-none ${
+                i === slide ? "opacity-100 z-[1]" : "opacity-0 z-0"
+              }`}
+            />
+          ))}
+          <div className="absolute inset-x-0 bottom-0 z-[2] flex items-end justify-between gap-2 bg-gradient-to-t from-black/45 to-transparent px-3 pb-3 pt-12">
+            <button
+              type="button"
+              aria-label="Previous photo"
+              onClick={() => go(-1)}
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-black/35 text-white backdrop-blur-sm transition hover:bg-black/55 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
+            >
+              ‹
+            </button>
+            <div className="flex flex-1 flex-wrap items-center justify-center gap-1.5 px-1">
+              {EXPERIENCE_SLIDES.map((_, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  aria-label={`Show photo ${i + 1} of ${EXPERIENCE_SLIDES.length}`}
+                  aria-current={i === slide}
+                  onClick={() => setSlide(i)}
+                  className={`h-1.5 rounded-full transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-white/80 ${
+                    i === slide ? "w-5 bg-white" : "w-1.5 bg-white/45 hover:bg-white/70"
+                  }`}
+                />
+              ))}
+            </div>
+            <button
+              type="button"
+              aria-label="Next photo"
+              onClick={() => go(1)}
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-black/35 text-white backdrop-blur-sm transition hover:bg-black/55 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
+            >
+              ›
+            </button>
+          </div>
         </div>
         <div>
           <p className="reveal text-xs tracking-[0.3em] uppercase text-accent-foreground/80 mb-4">The Experience</p>
@@ -455,9 +658,9 @@ function Events() {
           href={WHATSAPP}
           target="_blank"
           rel="noreferrer"
-          className="reveal reveal-delay-3 inline-block mt-10 bg-gradient-gold text-gold-foreground px-8 py-4 rounded-full font-semibold shadow-elegant hover:shadow-glow hover:scale-105 transition-all duration-300"
+          className="reveal reveal-delay-3 boton-elegante mt-10 inline-flex"
         >
-          Plan Your Group Stay
+          <span className="boton-elegante__label">Plan Your Group Stay</span>
         </a>
       </div>
     </section>
@@ -529,13 +732,27 @@ function Policies() {
   );
 }
 
+const GALLERY_IMAGES = [
+  "https://i.postimg.cc/nhkFKzKX/13.webp",
+  "https://i.postimg.cc/jSXx656g/11.webp",
+  "https://i.postimg.cc/YqBMJgbF/10.webp",
+  "https://i.postimg.cc/pLqvhSx8/9.webp",
+  "https://i.postimg.cc/XvP0xyr9/7.webp",
+  "https://i.postimg.cc/yx4CC4Xz/6.webp",
+  "https://i.postimg.cc/y6czXxsR/3.webp",
+  "https://i.postimg.cc/HstDRNJJ/2.webp",
+  "https://i.postimg.cc/Jz4VLQJ6/1.webp",
+] as const;
+
 const GALLERY = [
-  { src: gallery1, alt: "Resort exterior" },
-  { src: galleryView, alt: "Valley view" },
-  { src: roomBalcony, alt: "Balcony room" },
-  { src: galleryDining, alt: "Outdoor dining" },
-  { src: galleryFood, alt: "Indian thali" },
-  { src: roomDeluxe, alt: "Deluxe room" },
+  ...GALLERY_IMAGES.map((src, i) => ({
+    src,
+    alt: `Rajyog Resort & Villa — gallery photo ${i + 1}`,
+  })),
+  {
+    src: galleryThali,
+    alt: "Indian thali — home-style dining at Rajyog Resort & Villa",
+  },
 ];
 
 function Gallery() {
@@ -633,10 +850,37 @@ function Gallery() {
   );
 }
 
-const TESTIMONIALS = [
-  { n: "Priya & Rahul", c: "Mumbai", q: "The mornings here are unreal. Birds, mist, chai — we never wanted to leave." },
-  { n: "The Sharma Family", c: "Pune", q: "Hosted 30 of us for a reunion. Food, rooms, hospitality — everything was perfect." },
-  { n: "Aarav K.", c: "Bengaluru", q: "Walked to Mapro every evening. The villa felt like our own home in the hills." },
+const TESTIMONIALS: { n: string; c: string; q: string; rating?: number }[] = [
+  {
+    n: "Vedant Shinde",
+    c: "Google",
+    q: "I stayed at Rajyog Resort with my colleagues, and we loved it! The rooms were spacious, super clean, and so comfortable. The staff was friendly and helpful, and the service was great. It's right behind Mapro Garden, which was super convenient. Overall, a relaxing and fun stay. Highly recommend it!",
+    rating: 5,
+  },
+  {
+    n: "piyushkumarg2017",
+    c: "Tripadvisor",
+    q: "Excellent property with all the required facilities. Rooms are comfortable with king-size beds. Twenty-four-hour hot water, swimming pool, lawn, restaurant — everything is there for a satisfying stay.",
+    rating: 5,
+  },
+  {
+    n: "Ganesh Pawane",
+    c: "Google",
+    q: "Very grateful — very nice location. Right behind Mapro Garden. Good hospitality and rooms.",
+    rating: 5,
+  },
+  {
+    n: "Amol Kalbhor",
+    c: "Google",
+    q: "Safe parking, nice rooms, swimming pool, and delicious food.",
+    rating: 5,
+  },
+  {
+    n: "Shrikant Khanvilkar",
+    c: "Google",
+    q: "Great experience — had fun, nice location, and the swimming pool water is clean too.",
+    rating: 4,
+  },
 ];
 
 function Testimonials() {
@@ -647,20 +891,29 @@ function Testimonials() {
           <p className="reveal text-xs tracking-[0.3em] uppercase text-accent-foreground/80 mb-4">Guest Stories</p>
           <h2 className="reveal reveal-delay-1 font-serif text-4xl md:text-5xl text-primary">What guests say</h2>
         </div>
-        <div className="grid md:grid-cols-3 gap-7 perspective-stage">
-          {TESTIMONIALS.map((t, i) => (
-            <figure
-              key={t.n}
-              className={`reveal reveal-delay-${i + 1} depth-card p-8 rounded-2xl bg-background border border-border shadow-soft hover:shadow-elegant transition-all duration-500`}
-            >
-              <div className="text-accent text-2xl mb-3">★★★★★</div>
-              <blockquote className="font-serif text-lg text-foreground/90 leading-relaxed">"{t.q}"</blockquote>
-              <figcaption className="mt-5 text-sm">
-                <div className="font-semibold text-primary">{t.n}</div>
-                <div className="text-muted-foreground">{t.c}</div>
-              </figcaption>
-            </figure>
-          ))}
+        <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-7 perspective-stage">
+          {TESTIMONIALS.map((t, i) => {
+            const r = Math.min(5, Math.max(1, t.rating ?? 5));
+            return (
+              <figure
+                key={`${t.n}-${i}`}
+                className={`reveal reveal-delay-${(i % 5) + 1} depth-card p-8 rounded-2xl bg-background border border-border shadow-soft hover:shadow-elegant transition-all duration-500`}
+              >
+                <div
+                  className="mb-3 text-2xl tracking-tight"
+                  aria-label={`${r} out of 5 stars`}
+                >
+                  <span className="text-accent">{"★".repeat(r)}</span>
+                  <span className="text-accent/30">{"★".repeat(5 - r)}</span>
+                </div>
+                <blockquote className="font-serif text-lg text-foreground/90 leading-relaxed">"{t.q}"</blockquote>
+                <figcaption className="mt-5 text-sm">
+                  <div className="font-semibold text-primary">{t.n}</div>
+                  <div className="text-muted-foreground">{t.c}</div>
+                </figcaption>
+              </figure>
+            );
+          })}
         </div>
       </div>
     </section>
@@ -678,12 +931,22 @@ function Location() {
         <div className="reveal rounded-3xl overflow-hidden shadow-elegant border border-border aspect-[16/9]">
           <iframe
             title="Rajyog Resort & Villa Location"
-            src="https://www.google.com/maps?q=Mapro+Garden+Mahabaleshwar&output=embed"
+            src={MAP_EMBED_SRC}
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
             className="w-full h-full border-0"
           />
         </div>
+        <p className="reveal mt-4 text-center text-sm text-muted-foreground">
+          <a
+            href={MAP_GOOGLE_LINK}
+            target="_blank"
+            rel="noreferrer"
+            className="font-medium text-primary underline-offset-4 hover:underline"
+          >
+            Open in Google Maps
+          </a>
+        </p>
       </div>
     </section>
   );
@@ -779,21 +1042,29 @@ function FloatingWhatsApp() {
 function Index() {
   useReveal();
   return (
-    <main className="bg-background text-foreground">
-      <Header />
-      <Hero />
-      <About />
-      <Rooms />
-      <Amenities />
-      <Experience />
-      <Events />
-      <Food />
-      <Policies />
-      <Gallery />
-      <Testimonials />
-      <Location />
-      <HoverFooter />
-      <FloatingWhatsApp />
-    </main>
+    <>
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-background focus:px-4 focus:py-2.5 focus:text-sm focus:font-semibold focus:text-primary focus:shadow-elegant focus:outline-none focus:ring-2 focus:ring-accent/50"
+      >
+        Skip to main content
+      </a>
+      <main id="main-content" className="bg-background text-foreground" tabIndex={-1}>
+        <Header />
+        <Hero />
+        <About />
+        <Rooms />
+        <Amenities />
+        <Experience />
+        <Events />
+        <Food />
+        <Policies />
+        <Gallery />
+        <Testimonials />
+        <Location />
+        <HoverFooter />
+        <FloatingWhatsApp />
+      </main>
+    </>
   );
 }
