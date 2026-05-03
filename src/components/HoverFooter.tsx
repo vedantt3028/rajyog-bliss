@@ -41,7 +41,11 @@ export function HoverFooter({
   ];
 
   const defaultSocials: SocialItem[] = [
-    { icon: <Instagram className="h-5 w-5" />, label: "Instagram", href: "https://www.instagram.com" },
+    {
+      icon: <Instagram className="h-5 w-5" />,
+      label: "Instagram",
+      href: "https://www.instagram.com/rajyog.resort?igsh=ZXEwNmtmbWpsbTU%3D&utm_source=qr",
+    },
     { icon: <Facebook className="h-5 w-5" />, label: "Facebook", href: "https://www.facebook.com" },
     { icon: <MessageCircle className="h-5 w-5" />, label: "WhatsApp", href: "https://wa.me/917030929651" },
   ];

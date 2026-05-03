@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Instagram } from "lucide-react";
 import { HeroScene } from "@/components/HeroScene";
 import { HoverFooter } from "@/components/HoverFooter";
 import { useMotionPreference } from "@/hooks/useMotionPreference";
@@ -15,6 +16,8 @@ export const Route = createFileRoute("/")({
 const WHATSAPP =
   "https://wa.me/917030929651?text=Hello%20I%20want%20to%20book%20Rajyog%20Resort%20and%20Villa";
 const PHONE = "tel:+917030929651";
+const INSTAGRAM_URL =
+  "https://www.instagram.com/rajyog.resort?igsh=ZXEwNmtmbWpsbTU%3D&utm_source=qr";
 
 /** Resolved from https://maps.app.goo.gl/FRvLeAjjV1ESh6rj6 — Rajyog Resort and Villa pin */
 const MAP_GOOGLE_LINK = "https://maps.app.goo.gl/FRvLeAjjV1ESh6rj6";
@@ -951,6 +954,17 @@ function Location() {
             className="font-medium text-primary underline-offset-4 hover:underline"
           >
             Open in Google Maps
+          </a>
+        </p>
+        <p className="reveal mt-2 text-center text-sm text-muted-foreground">
+          <a
+            href={INSTAGRAM_URL}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-2 font-medium text-primary underline-offset-4 hover:underline"
+          >
+            <Instagram size={16} aria-hidden="true" />
+            Follow us on Instagram
           </a>
         </p>
       </div>
