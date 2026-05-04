@@ -373,17 +373,17 @@ const ROOMS = [
   {
     name: "Family Room",
     desc: "Spacious stay for families up to 4 guests.",
-    img: "https://i.postimg.cc/3J00ZgWj/8.webp",
+    img: "https://i.postimg.cc/pLqvhSx8/9.webp",
   },
   {
     name: "2 BHK Villa",
     desc: "Two bedrooms, living area — for small groups.",
-    img: "https://i.postimg.cc/pLqvhSx8/9.webp",
+    img: "https://i.postimg.cc/3J00ZgWj/8.webp",
   },
   {
     name: "4 BHK Villa",
     desc: "Our largest villa — ideal for big celebrations.",
-    img: "https://i.postimg.cc/kGbMWvwN/4-BHK-01-jpg.jpg",
+    img: "https://i.postimg.cc/pXpyHQ6R/Whats-App-Image-2026-05-03-at-10-55-19-PM.jpg",
   },
 ];
 
